@@ -1,6 +1,8 @@
 package com.pluralsight;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
@@ -11,10 +13,12 @@ public class Capstone_1 {
     public static void main(String[] args) throws IOException {
         DateTimeFormatter.ofPattern("yyyy/MM/dd");
         //First I'm making my home menu and displaying options for the user to select.
-
         //have to restructure make home menu a static method maybe
-
-            while(true){
+        //make sure ledger gets updated as i do payments i can do this by making an arraylist as the transactions get put in.
+        //there should be a screen for home ledger then reports.
+        //close buffered writer after deposit as it needs to read so it doesnt overwrite the payment.
+            boolean home = true;
+            while(home){
                 System.out.println("Hello! Welcome to the CLI finance App ");
                 System.out.println("-------------------------------------");
                 System.out.println("Please select one our options below!");
@@ -28,16 +32,15 @@ public class Capstone_1 {
                     //Make sure to append or else im rewriting the file every time
                     try {
                         System.out.println("Im going to need your deposit information");
-                        System.out.println("Please enter all the info in this format (MM/dd/yyyy)|(Military time e.g 17:00)| description | amount");
+                        System.out.println("Please enter all the info in this exact format (MM/dd/yyyy)|(Military time e.g 17:00)| description | amount");
                         System.out.println("e.g 2023-04-15|11:15:00|Invoice 1001 paid|Joe|1500.00 ");
                         String depositInfo = input.nextLine();
-
-                        //make sure ledger gets updated as i do payments i can do this by making an arraylist as the transactions get put in.
-                        //there should be a screen for home ledger then reports.
-
-                        //close buffered writer after deposit as it needs to read so it doesnt overwrite the payment.
+                        //split using |
+                        String[] depositArray = depositInfo.split("\\|");
 
                         FileWriter writeon = new FileWriter( "transactions.csv", true);
+
+                        writeon.write("depositArray" + "Added on " );
 
                     } catch (RuntimeException e) {
                         throw new RuntimeException(e);
@@ -54,9 +57,20 @@ public class Capstone_1 {
                         throw new RuntimeException(e);
                     }
                     break;
-                case "L": //should open a ledger screen pressing a should print all transactions etc
+                case "L": home = false;
+                    //should open a ledger screen pressing a should print all transactions etc
                     //there should be a function that sorts all transactions and stuff
                     System.out.println("Moving to Ledger");
+                    try {
+                        System.out.println("______________________");
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    System.out.println("Welcome to the ledger, Please select an option: ");
+                    System.out.println("(A) Display All reports.\n(D) Display Deposits into the account\n(P) Display all negative entries (payments)");
+                    // if statement to make when H is selected home will equal true
 
                     break;
 
@@ -91,3 +105,4 @@ public class Capstone_1 {
         }
     }
 }
+
