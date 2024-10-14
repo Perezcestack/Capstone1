@@ -1,9 +1,12 @@
 package com.pluralsight;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Capstone_1 {
@@ -40,7 +43,8 @@ public class Capstone_1 {
 
                         FileWriter writeon = new FileWriter( "transactions.csv", true);
 
-                        writeon.write("depositArray" + "Added on " );
+                        writeon.write(Arrays.toString(depositArray) + "Added on " );
+                        writeon.close();
 
                     } catch (RuntimeException e) {
                         throw new RuntimeException(e);
@@ -51,7 +55,13 @@ public class Capstone_1 {
                     System.out.println("Im going to need your debit information");
                     System.out.println("Please enter your information in the following format");
                     System.out.println("2023-04-15|10:13:25|ergonomic keyboard|Amazon|-89.50");
+                    String paymentInfo = input.nextLine();
 
+                    FileWriter writeon = new FileWriter( "transactions.csv", true);
+                    String[] paymentArray = paymentInfo.split("\\|");
+
+                    writeon.write(Arrays.toString(paymentArray) + "Added on ");
+                    writeon.close();
 
                     } catch (RuntimeException e) {
                         throw new RuntimeException(e);
@@ -63,13 +73,34 @@ public class Capstone_1 {
                     System.out.println("Moving to Ledger");
                     try {
                         System.out.println("______________________");
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
 
                     System.out.println("Welcome to the ledger, Please select an option: ");
-                    System.out.println("(A) Display All reports.\n(D) Display Deposits into the account\n(P) Display all negative entries (payments)");
+                    System.out.println("(A) Display All reports.\n(D) Display Deposits into the account\n(P) Display all negative entries (payments)\n(R) Display Reports\n(H) Navigate back to home.");
+                    String ledgerSelection = input.nextLine();
+
+                    switch (ledgerSelection.toUpperCase()){
+                        case "A":
+                            try {
+
+                                FileReader fileread = new FileReader("transactions.csv");
+                                BufferedReader bufReader1 = new BufferedReader(fileread);
+
+                                String readPut;
+
+                                while ((readPut = bufReader1.readLine()) != null) {
+                                    System.out.println(readPut);
+                                }
+                                bufReader1.close();
+                            }catch(IOException e) {
+                                e.printStackTrace();
+                            }break;
+                        case "H":
+                            home = true;
+                    }
                     // if statement to make when H is selected home will equal true
 
                     break;
