@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Capstone_1 {
@@ -15,6 +17,9 @@ public class Capstone_1 {
 
     public static void main(String[] args) throws IOException {
         DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<String[]> depositList = new ArrayList<>();
+        List<String[]> paymentList = new ArrayList<>();
+
         //First I'm making my home menu and displaying options for the user to select.
         //have to restructure make home menu a static method maybe
         //make sure ledger gets updated as i do payments i can do this by making an arraylist as the transactions get put in.
@@ -41,9 +46,11 @@ public class Capstone_1 {
                         //split using |
                         String[] depositArray = depositInfo.split("\\|");
 
+                        depositList.add(depositArray);
+
                         FileWriter writeon = new FileWriter( "transactions.csv", true);
 
-                        writeon.write(Arrays.toString(depositArray) + "Added on " );
+                        writeon.write(Arrays.toString(depositArray) + " " + "Added on" + "\n");
                         writeon.close();
 
                     } catch (RuntimeException e) {
@@ -57,10 +64,12 @@ public class Capstone_1 {
                     System.out.println("2023-04-15|10:13:25|ergonomic keyboard|Amazon|-89.50");
                     String paymentInfo = input.nextLine();
 
-                    FileWriter writeon = new FileWriter( "transactions.csv", true);
+                    FileWriter writeon = new FileWriter( "transactions.csv",  true);
                     String[] paymentArray = paymentInfo.split("\\|");
 
-                    writeon.write(Arrays.toString(paymentArray) + "Added on ");
+                    paymentList.add(paymentArray);
+
+                    writeon.write(Arrays.toString(paymentArray) + " " + "Added on" + "\n") ;
                     writeon.close();
 
                     } catch (RuntimeException e) {
@@ -98,6 +107,31 @@ public class Capstone_1 {
                             }catch(IOException e) {
                                 e.printStackTrace();
                             }break;
+                        case "D":
+                            try {
+
+                            FileReader fileread = new FileReader("transactions.csv");
+                            BufferedReader bufferedRead2 = new BufferedReader(fileread);
+
+                            while (bufferedRead2.readLine() != null) {
+                                System.out.println(depositList);
+                            }
+                            } catch(IOException e) {
+                                e.printStackTrace();
+                                }       //might have to make a method for filereader would make more sense than writing it out everytime
+                            break;
+                        case "P":
+                                try {
+                                    FileReader fileReadPay = new FileReader("transactions.csv");
+                                    BufferedReader buffReaderPay = new BufferedReader(fileReadPay);
+
+                                    while (buffReaderPay.readLine() != null) {
+                                        System.out.println(paymentList);
+                                    }
+                                }catch (IOException e){
+                                    e.printStackTrace();
+                                }
+                                break;
                         case "H":
                             home = true;
                     }
