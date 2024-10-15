@@ -1,5 +1,3 @@
-
-[2023-04-15, 11:15:00, Invoice 1001 paid, Joe, 1500.00] Added on
-[2024-05-15, 11:15:00, Invoice 1002 paid, Cesar, 2000.00] Added on
-[2023-04-15, 10:13:25, ergonomic keyboard, Amazon, -89.50] Added on
-[2024-05-25, 10:24:25, Premium Subscription, Spotify, -200.50] Added on
+2023-04-15|11:15:00|Invoice 1001 paid|Joe|1500.00
+2023-04-15|11:15:00|Invoice 1001 paid|Sameem|1600.00
+2023-04-15|10:13:25|ergonomic keyboard|Amazon|-89.50
