@@ -2,12 +2,10 @@ package com.pluralsight;
 import javax.sound.sampled.Line;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Capstone_1 {
     //psv innit and put all 17-31 in method
@@ -38,8 +36,10 @@ public class Capstone_1 {
     static List<String> paymentList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
+        LocalDate now = LocalDate.now();
+//        DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy/MM");
+//        DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("HH:mm:ss");
         //read file to add stuff to list then parse index 4 to >0 to check if payment if not add to deposit
        //String[] arrayToList = "transactions.csv".split(",");
         String line;
@@ -60,6 +60,7 @@ public class Capstone_1 {
         //close buffered writer after deposit as it needs to read so it doesnt overwrite the payment.
         boolean home = true;
         boolean ledger = true;
+        boolean reports = true;
 
 
         while (home) {
@@ -81,6 +82,7 @@ public class Capstone_1 {
                     handlePayments();
                     break;
                 case "L":
+                    ledger = true;
                     home = false;
                     //should open a ledger screen pressing a should print all transactions etc
                     //there should be a function that sorts all transactions and stuff
@@ -146,6 +148,119 @@ public class Capstone_1 {
                                 }
                                 break;
 
+                            case "R":
+                                reports = true;
+                                ledger = false;
+                                //System.out.println(LocalDateTime.now().format(dateTimeFormatter1));
+                                System.out.println("Moving to reports");
+                                try {
+                                    Thread.sleep(00);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                               while(reports) {
+                                    System.out.println("_____________________");
+                                    System.out.println("Hi, Welcome to reports How would you like to divide the reports?");
+                                    System.out.println("(1)Month to Date \n(2)Previous Month \n(3)Year to Date \n(4)Previous Year \n(5)Search by Vendor \n(0)Back to home");
+                                    String reportSelect = input.nextLine();
+
+                                    switch (reportSelect) {
+                                        case "1":
+                                            FileReader fileread = new FileReader("transactions.csv");
+                                            BufferedReader bufferedRead2 = new BufferedReader(fileread);
+
+                                            while ((line = bufferedRead2.readLine()) != null) {
+                                                String[] transactionArray = line.split("\\|");
+                                                String dateParse = transactionArray[0];
+
+                                                LocalDate transactionDate = LocalDate.parse(dateParse,DateTimeFormatter.ofPattern("yyyy/M/d"));
+                                                if (transactionDate.getMonth() == LocalDate.now().getMonth() && transactionDate.getYear() == LocalDate.now().getYear()) {
+                                                    System.out.println(line);
+                                                }
+//
+                                            }
+                                            bufferedRead2.close();
+                                            break;
+                                        case "2":
+                                            LocalDate previousMonth = now.minusMonths(1);
+
+                                            FileReader fileRead4 = new FileReader("transactions.csv");
+                                            BufferedReader bufferedRead5 = new BufferedReader(fileRead4);
+
+                                            while ((line = bufferedRead5.readLine()) != null) {
+                                                String[] transactionArray = line.split("\\|");
+                                                String dateParse = transactionArray[0];
+
+                                                LocalDate transactionDate = LocalDate.parse(dateParse,DateTimeFormatter.ofPattern("yyyy/M/d"));
+                                                if (transactionDate.getMonthValue() == previousMonth.getMonthValue() &&
+                                                    transactionDate.getYear() == previousMonth.getYear()) {
+                                                    System.out.println(line);
+                                                }
+//
+                                            }
+                                            bufferedRead5.close();
+
+                                            break;
+                                        case "3":
+                                            FileReader fileread7 = new FileReader("transactions.csv");
+                                            BufferedReader bufferedRead8 = new BufferedReader(fileread7);
+
+                                            while ((line = bufferedRead8.readLine()) != null) {
+                                                String[] transactionArray = line.split("\\|");
+                                                String dateParse = transactionArray[0];
+
+                                                LocalDate transactionDate = LocalDate.parse(dateParse, DateTimeFormatter.ofPattern("yyyy/M/d"));
+                                                if (transactionDate.getYear() == LocalDate.now().getYear()) {
+                                                    System.out.println(line);
+                                                }
+                                            }
+                                            bufferedRead8.close();
+                                            break;
+                                        case "4":
+                                            LocalDate previousYear = now.minusYears(1);
+                                            FileReader fileread9 = new FileReader("transactions.csv");
+                                            BufferedReader bufferedRead9 = new BufferedReader(fileread9);
+
+                                            while ((line = bufferedRead9.readLine()) != null) {
+                                                String[] transactionArray = line.split("\\|");
+                                                String dateParse = transactionArray[0];
+
+                                                LocalDate transactionDate = LocalDate.parse(dateParse, DateTimeFormatter.ofPattern("yyyy/M/d"));
+                                                if (transactionDate.getYear() == previousYear.getYear()) {
+                                                    System.out.println(line);
+                                                }
+                                            }
+                                            bufferedRead9.close();
+                                            break;
+                                        case "5":
+                                            FileReader fileread12 = new FileReader("transactions.csv");
+                                            BufferedReader bufferedRead12 = new BufferedReader(fileread12);
+
+                                            System.out.println("What vendor are you searching for? ");
+                                            String vendor = input.nextLine();
+
+                                            while ((line = bufferedRead12.readLine()) != null) {
+                                                String[] transactionArray = line.split("\\|");
+                                                String vendorFile = transactionArray[3];
+
+                                                if (Objects.equals(vendor, vendorFile)){
+                                                    System.out.println(line);
+                                                }
+                                            }
+
+
+                                        case "0":
+                                            System.out.println("Exiting Reports");
+                                            System.out.println("________________________");
+                                            reports = false;
+
+                                            home = true;
+
+                                            break;
+
+                                    }
+                                }
+                               break;
                             case "H":
                                 ledger = false;
                                 home = true;
@@ -191,7 +306,7 @@ public class Capstone_1 {
         try {
             System.out.println("Im going to need your debit information");
             System.out.println("Please enter your information in the following format");
-            System.out.println("2023-04-15|10:13:25|ergonomic keyboard|Amazon|-89.50");
+            System.out.println("2023/04/15|10:13:25|ergonomic keyboard|Amazon|-89.50");
             String paymentInfo = input.nextLine();
 
 
@@ -209,7 +324,7 @@ public class Capstone_1 {
         try {
             System.out.println("Im going to need your deposit information");
             System.out.println("Please enter all the info in this exact format (MM/dd/yyyy)|(Military time e.g 17:00)| description | amount");
-            System.out.println("e.g 2023-04-15|11:15:00|Invoice 1001 paid|Joe|1500.00 ");
+            System.out.println("e.g 2023/04/15|11:15:00|Invoice 1001 paid|Joe|1500.00 ");
             String depositInfo = input.nextLine();
             //split using |
 
