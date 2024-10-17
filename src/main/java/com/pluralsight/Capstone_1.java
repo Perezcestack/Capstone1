@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Capstone_1 {
     //psv innit and put all 17-31 in method
@@ -135,20 +136,18 @@ public class Capstone_1 {
 
                                     switch (reportSelect) {
                                         case "1":
-                                            FileReader fileread = new FileReader("transactions.csv");
-                                            BufferedReader bufferedRead2 = new BufferedReader(fileread);
+                                            List<Transactions> monthToDate = new ArrayList<>();
+                                            monthToDate.addAll(depositList);
+                                            monthToDate.addAll(paymentList);
 
-                                            while ((line = bufferedRead2.readLine()) != null) {
-                                                String[] transactionArray = line.split("\\|");
-                                                String dateParse = transactionArray[0];
+                                            monthToDate = monthToDate.stream().filter(t -> t.getDate().getMonth() == LocalDate.now().getMonth() &&
+                                            t.getDate().getYear() == LocalDate.now().getYear()).collect(Collectors.toList());
 
-                                                LocalDate transactionDate = LocalDate.parse(dateParse,DateTimeFormatter.ofPattern("yyyy/M/d"));
-                                                if (transactionDate.getMonth() == LocalDate.now().getMonth() && transactionDate.getYear() == LocalDate.now().getYear()) {
-                                                    System.out.println(line);
-                                                }
-//
+                                            monthToDate.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+
+                                            for (Transactions transactions : monthToDate) {
+                                                System.out.println(transactions);
                                             }
-                                            bufferedRead2.close();
                                             break;
                                         case "2":
                                             LocalDate previousMonth = now.minusMonths(1);
@@ -270,22 +269,18 @@ public class Capstone_1 {
             }
         }
     }
-    static void handleAllReports(){
-        try {
+    static void handleAllReports() {
+        List<Transactions> allTransactions = new ArrayList<>();
+        allTransactions.addAll(depositList);
+        allTransactions.addAll(paymentList);
 
-            FileReader fileread = new FileReader("transactions.csv");
-            BufferedReader bufReader1 = new BufferedReader(fileread);
+        allTransactions.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
 
-            String readPut;
-
-            while ((readPut = bufReader1.readLine()) != null) {
-                System.out.println(readPut);
-            }
-            bufReader1.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (Transactions transactions : allTransactions) {
+            System.out.println(transactions);
         }
     }
+
     static void handlePayments() {
         try {
             System.out.println("Im going to need details surrounding your payment!");
