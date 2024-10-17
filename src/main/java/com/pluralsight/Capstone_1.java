@@ -2,10 +2,7 @@ package com.pluralsight;
 import javax.sound.sampled.Line;
 import java.io.*;
 import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +54,6 @@ public class Capstone_1 {
         }
         depositList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
 
-
         //First I'm making my home menu and displaying options for the user to select.
         //have to restructure make home menu a static method maybe
         //make sure ledger gets updated as i do payments i can do this by making an arraylist as the transactions get put in.
@@ -93,7 +89,7 @@ public class Capstone_1 {
                     //there should be a function that sorts all transactions and stuff
                     System.out.println("Moving to Ledger");
                     try {
-                        Thread.sleep(00);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -125,7 +121,7 @@ public class Capstone_1 {
                                 //System.out.println(LocalDateTime.now().format(dateTimeFormatter1));
                                 System.out.println("Moving to reports");
                                 try {
-                                    Thread.sleep(00);
+                                    Thread.sleep(500);
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -135,89 +131,62 @@ public class Capstone_1 {
                                     System.out.println("(1)Month to Date \n(2)Previous Month \n(3)Year to Date \n(4)Previous Year \n(5)Search by Vendor \n(0)Back to home");
                                     String reportSelect = input.nextLine();
 
+                                   List<Transactions> transactionsListAll = new ArrayList<>();
+
+                                   transactionsListAll.addAll(depositList);
+                                   transactionsListAll.addAll(paymentList);
+
                                     switch (reportSelect) {
                                         case "1":
-                                            List<Transactions> monthToDate = new ArrayList<>();
-                                            monthToDate.addAll(depositList);
-                                            monthToDate.addAll(paymentList);
+                                            Month thisMonth = now.getMonth();
 
-                                            monthToDate = monthToDate.stream().filter(t -> t.getDate().getMonth() == LocalDate.now().getMonth() &&
-                                            t.getDate().getYear() == LocalDate.now().getYear()).collect(Collectors.toList());
+                                            transactionsListAll = transactionsListAll.stream().filter(transactions -> transactions.getDate().getMonth() == thisMonth).collect(Collectors.toList());
 
-                                            monthToDate.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
-
-                                            for (Transactions transactions : monthToDate) {
+                                            for (Transactions transactions : transactionsListAll) {
                                                 System.out.println(transactions);
                                             }
                                             break;
                                         case "2":
                                             Month previousMonth = now.minusMonths(1).getMonth();
-                                            List<Transactions> previousMonthsTransaction = new ArrayList<>();
 
-                                            previousMonthsTransaction.addAll(depositList);
-                                            previousMonthsTransaction.addAll(paymentList);
-
-                                          previousMonthsTransaction = previousMonthsTransaction.stream().filter(t -> t.getDate().getMonth() == previousMonth).collect(Collectors.toList());
-                                            for (Transactions transactions : previousMonthsTransaction) {
+                                            transactionsListAll = transactionsListAll.stream().filter(t -> t.getDate().getMonth() == previousMonth).collect(Collectors.toList());
+                                            for (Transactions transactions : transactionsListAll) {
                                                 System.out.println(transactions);
                                             }
 
                                             break;
                                         case "3":
-                                            FileReader fileread7 = new FileReader("transactions.csv");
-                                            BufferedReader bufferedRead8 = new BufferedReader(fileread7);
+                                            int currentYear = now.getYear();
 
-                                            while ((line = bufferedRead8.readLine()) != null) {
-                                                String[] transactionArray = line.split("\\|");
-                                                String dateParse = transactionArray[0];
-
-                                                LocalDate transactionDate = LocalDate.parse(dateParse, DateTimeFormatter.ofPattern("yyyy/M/d"));
-                                                if (transactionDate.getYear() == LocalDate.now().getYear()) {
-                                                    System.out.println(line);
-                                                }
+                                            transactionsListAll = transactionsListAll.stream().filter(transactions -> transactions.getDate().getYear() == currentYear).collect(Collectors.toList());
+                                            for(Transactions transactions : transactionsListAll){
+                                                System.out.println(transactions);
                                             }
-                                            bufferedRead8.close();
+//
                                             break;
                                         case "4":
-                                            LocalDate previousYear = now.minusYears(1);
-                                            FileReader fileread9 = new FileReader("transactions.csv");
-                                            BufferedReader bufferedRead9 = new BufferedReader(fileread9);
+                                            int previousYear = now.minusYears(1).getYear();
 
-                                            while ((line = bufferedRead9.readLine()) != null) {
-                                                String[] transactionArray = line.split("\\|");
-                                                String dateParse = transactionArray[0];
-
-                                                LocalDate transactionDate = LocalDate.parse(dateParse, DateTimeFormatter.ofPattern("yyyy/M/d"));
-                                                if (transactionDate.getYear() == previousYear.getYear()) {
-                                                    System.out.println(line);
-                                                }
+                                            transactionsListAll = transactionsListAll.stream().filter(transactions -> transactions.getDate().getYear() == previousYear).collect(Collectors.toList());
+                                            for(Transactions transactions : transactionsListAll){
+                                                System.out.println(transactions);
                                             }
-                                            bufferedRead9.close();
+
                                             break;
                                         case "5":
-                                            FileReader fileread12 = new FileReader("transactions.csv");
-                                            BufferedReader bufferedRead12 = new BufferedReader(fileread12);
-
                                             System.out.println("What vendor are you searching for? ");
                                             String vendor = input.nextLine();
 
-                                            while ((line = bufferedRead12.readLine()) != null) {
-                                                String[] transactionArray = line.split("\\|");
-                                                String vendorFile = transactionArray[3];
-
-                                                if (Objects.equals(vendor, vendorFile)){
-                                                    System.out.println(line);
-                                                }
+                                            transactionsListAll = transactionsListAll.stream().filter(transactions -> transactions.getVendor().equalsIgnoreCase(vendor)).collect(Collectors.toList());
+                                            for (Transactions transactions : transactionsListAll){
+                                                System.out.println(transactions);
                                             }
-
 
                                         case "0":
                                             System.out.println("Exiting Reports");
                                             System.out.println("________________________");
                                             reports = false;
-
                                             home = true;
-
                                             break;
 
                                     }
@@ -234,26 +203,7 @@ public class Capstone_1 {
 
 
                 case "X":
-
-                    System.out.println("Thank you for choosing CLI Finance App,Have a wonderful Day");
-                    System.out.println("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀      ⢀⡤⠒⠒⠢⢄⡀⢠⡏⠉⠉⠉⠑⠒⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⢀⡞⠀⠀⠀⠀⠀⠙⢦⠀⡇⡇⠀⠀⠀⠀⠀⠀ ⠈⠱⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠊⠉⠉⠙⠒⢤⡀⠀⣼⠀⠀⢀⣶⣤⠀⠀⠀⢣⡇⡇⠀⠀⢴⣶⣦⠀⠀⠀⢳⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⠀⠀⠀⢀⣠⠤⢄⠀⠀⢰⡇⠀⠀⣠⣀⠀⠀⠈⢦⡿⡀⠀⠈⡟⣟⡇⠀⠀⢸⡇⡆⠀⠀⡼⢻⣠⠀⠀⠀⣸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⠀⢀⠖⠉⠀⠀⠀⣱⡀⡞⡇⠀⠀⣿⣿⢣⠀⠀⠈⣧⣣⠀⠀⠉⠋⠀⠀⠀⣸⡇⠇⠀⠀⠈⠉⠀⠀⠀⢀⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⣠⠏⠀⠀⣴⢴⣿⣿⠗⢷⡹⡀⠀⠘⠾⠾⠀⠀⠀⣿⣿⣧⡀⠀⠀⠀⢀⣴⠇⣇⣆⣀⢀⣀⣀⣀⣀⣤⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⣿⠀⠀⢸⢻⡞⠋⠀⠀⠀⢿⣷⣄⠀⠀⠀⠀⠀⣠⡇⠙⢿⣽⣷⣶⣶⣿⠋⢰⣿⣿⣿⣿⣿⣿⠿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
-                            "⡿⡄⠀⠈⢻⣝⣶⣶⠀⠀⠀⣿⣿⣱⣶⣶⣶⣾⡟⠀⠀⠀⢈⡉⠉⢩⡖⠒⠈⠉⡏⡴⡏⠉⠉⠉⠉⠉⠉⠉⠉⡇⠀⠀⢀⣴⠒⠢⠤⣀\n" +
-                            "⢣⣸⣆⡀⠀⠈⠉⠁⠀⠀⣠⣷⠈⠙⠛⠛⠛⠉⢀⣴⡊⠉⠁⠈⢢⣿⠀⠀⠀⢸⠡⠀⠁⠀⠀⠀⣠⣀⣀⣀⣀⡇⠀⢰⢁⡇⠀⠀⠀⢠\n" +
-                            "⠀⠻⣿⣟⢦⣤⡤⣤⣴⣾⡿⢃⡠⠔⠒⠉⠛⠢⣾⢿⣿⣦⡀⠀⠀⠉⠀⠀⢀⡇⢸⠀⠀⠀⠀⠀⠿⠿⠿⣿⡟⠀⢀⠇⢸⠀⠀⠀⠀⠘\n" +
-                            "⠀⠀⠈⠙⠛⠿⠿⠿⠛⠋⢰⡋⠀⠀⢠⣤⡄⠀⠈⡆⠙⢿⣿⣦⣀⠀⠀⠀⣜⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⢀⠃⠀⡸⠀⠇⠀⠀⠀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢣⠀⠀⠈⠛⠁⠀⢴⠥⡀⠀⠙⢿⡿⡆⠀⠀⢸⠀⢸⢰⠀⠀⠀⢀⣿⣶⣶⡾⠀⢀⠇⣸⠀⠀⠀⠀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡀⢇⠀⠀⠀⢀⡀⠀⠀⠈⢢⠀⠀⢃⢱⠀⠀⠀⡇⢸⢸⠀⠀⠀⠈⠉⠉⠉⢱⠀⠼⣾⣿⣿⣷⣦⠴⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⠘⡄⠀⠀⢹⣿⡇⠀⠀⠈⡆⠀⢸⠈⡇⢀⣀⣵⢨⣸⣦⣤⣤⣄⣀⣀⣀⡞⠀⣠⡞⠉⠈⠉⢣⡀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢃⠘⡄⠀⠀⠉⠀⠀⣠⣾⠁⠀⠀⣧⣿⣿⡿⠃⠸⠿⣿⣿⣿⣿⣿⣿⠟⠁⣼⣾⠀⠀⠀⠀⢠⠇⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠹⣀⣀⣤⣶⣿⡿⠃⠀⠀⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠀⠀⢻⣿⣷⣦⣤⣤⠎⠀⠀⠀\n" +
-                            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣤⣿⡿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠀⠀");
-                    System.exit(0);
+                    exitProgram();
                     break;
 
                 default:
@@ -262,6 +212,28 @@ public class Capstone_1 {
 
             }
         }
+    }
+    static void exitProgram(){
+
+        System.out.println("Thank you for choosing CLI Finance App,Have a wonderful Day");
+        System.out.println("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀      ⢀⡤⠒⠒⠢⢄⡀⢠⡏⠉⠉⠉⠑⠒⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⢀⡞⠀⠀⠀⠀⠀⠙⢦⠀⡇⡇⠀⠀⠀⠀⠀⠀ ⠈⠱⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠊⠉⠉⠙⠒⢤⡀⠀⣼⠀⠀⢀⣶⣤⠀⠀⠀⢣⡇⡇⠀⠀⢴⣶⣦⠀⠀⠀⢳⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⠀⠀⠀⢀⣠⠤⢄⠀⠀⢰⡇⠀⠀⣠⣀⠀⠀⠈⢦⡿⡀⠀⠈⡟⣟⡇⠀⠀⢸⡇⡆⠀⠀⡼⢻⣠⠀⠀⠀⣸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⠀⢀⠖⠉⠀⠀⠀⣱⡀⡞⡇⠀⠀⣿⣿⢣⠀⠀⠈⣧⣣⠀⠀⠉⠋⠀⠀⠀⣸⡇⠇⠀⠀⠈⠉⠀⠀⠀⢀⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⣠⠏⠀⠀⣴⢴⣿⣿⠗⢷⡹⡀⠀⠘⠾⠾⠀⠀⠀⣿⣿⣧⡀⠀⠀⠀⢀⣴⠇⣇⣆⣀⢀⣀⣀⣀⣀⣤⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⣿⠀⠀⢸⢻⡞⠋⠀⠀⠀⢿⣷⣄⠀⠀⠀⠀⠀⣠⡇⠙⢿⣽⣷⣶⣶⣿⠋⢰⣿⣿⣿⣿⣿⣿⠿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                "⡿⡄⠀⠈⢻⣝⣶⣶⠀⠀⠀⣿⣿⣱⣶⣶⣶⣾⡟⠀⠀⠀⢈⡉⠉⢩⡖⠒⠈⠉⡏⡴⡏⠉⠉⠉⠉⠉⠉⠉⠉⡇⠀⠀⢀⣴⠒⠢⠤⣀\n" +
+                "⢣⣸⣆⡀⠀⠈⠉⠁⠀⠀⣠⣷⠈⠙⠛⠛⠛⠉⢀⣴⡊⠉⠁⠈⢢⣿⠀⠀⠀⢸⠡⠀⠁⠀⠀⠀⣠⣀⣀⣀⣀⡇⠀⢰⢁⡇⠀⠀⠀⢠\n" +
+                "⠀⠻⣿⣟⢦⣤⡤⣤⣴⣾⡿⢃⡠⠔⠒⠉⠛⠢⣾⢿⣿⣦⡀⠀⠀⠉⠀⠀⢀⡇⢸⠀⠀⠀⠀⠀⠿⠿⠿⣿⡟⠀⢀⠇⢸⠀⠀⠀⠀⠘\n" +
+                "⠀⠀⠈⠙⠛⠿⠿⠿⠛⠋⢰⡋⠀⠀⢠⣤⡄⠀⠈⡆⠙⢿⣿⣦⣀⠀⠀⠀⣜⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⢀⠃⠀⡸⠀⠇⠀⠀⠀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢣⠀⠀⠈⠛⠁⠀⢴⠥⡀⠀⠙⢿⡿⡆⠀⠀⢸⠀⢸⢰⠀⠀⠀⢀⣿⣶⣶⡾⠀⢀⠇⣸⠀⠀⠀⠀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡀⢇⠀⠀⠀⢀⡀⠀⠀⠈⢢⠀⠀⢃⢱⠀⠀⠀⡇⢸⢸⠀⠀⠀⠈⠉⠉⠉⢱⠀⠼⣾⣿⣿⣷⣦⠴⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⠘⡄⠀⠀⢹⣿⡇⠀⠀⠈⡆⠀⢸⠈⡇⢀⣀⣵⢨⣸⣦⣤⣤⣄⣀⣀⣀⡞⠀⣠⡞⠉⠈⠉⢣⡀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢃⠘⡄⠀⠀⠉⠀⠀⣠⣾⠁⠀⠀⣧⣿⣿⡿⠃⠸⠿⣿⣿⣿⣿⣿⣿⠟⠁⣼⣾⠀⠀⠀⠀⢠⠇⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠹⣀⣀⣤⣶⣿⡿⠃⠀⠀⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠀⠀⢻⣿⣷⣦⣤⣤⠎⠀⠀⠀\n" +
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣤⣿⡿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠀⠀");
+        System.exit(0);
     }
     static void handleAllReports() {
         List<Transactions> allTransactions = new ArrayList<>();
