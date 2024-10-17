@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -32,26 +33,28 @@ public class Capstone_1 {
         }
     }
 
-    static List<String> depositList = new ArrayList<>();
-    static List<String> paymentList = new ArrayList<>();
+    static List<Transactions> depositList = new ArrayList<>();
+    static List<Transactions> paymentList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         LocalDate now = LocalDate.now();
-//        DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/M/d");
 //        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy/MM");
 //        DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("HH:mm:ss");
         //read file to add stuff to list then parse index 4 to >0 to check if payment if not add to deposit
        //String[] arrayToList = "transactions.csv".split(",");
         String line;
-
         while ((line = buffReader.readLine()) != null) {
             String[] transactionArray = line.split("\\|");
-            if(Double.parseDouble(transactionArray[4]) > 0){
-                depositList.add(line);
+            Transactions t = new Transactions(LocalDate.parse(transactionArray[0],dateTimeFormatter), LocalTime.parse(transactionArray[1]),transactionArray[2],transactionArray[3],Double.parseDouble(transactionArray[4]));
+            if(t.getAmount() > 0){
+                depositList.add(t);
             }else {
-                paymentList.add(line);
+                paymentList.add(t);
             }
         }
+        depositList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+
 
         //First I'm making my home menu and displaying options for the user to select.
         //have to restructure make home menu a static method maybe
@@ -98,54 +101,20 @@ public class Capstone_1 {
                         System.out.println("(A) Display All reports.\n(D) Display Deposits into the account\n(P) Display all negative entries (payments)\n(R) Display Reports\n(H) Navigate back to home.");
                         String ledgerSelection = input.nextLine();
 
-
                         switch (ledgerSelection.toUpperCase()) {
                             case "A":
-                                try {
-
-                                    FileReader fileread = new FileReader("transactions.csv");
-                                    BufferedReader bufReader1 = new BufferedReader(fileread);
-
-                                    String readPut;
-
-                                    while ((readPut = bufReader1.readLine()) != null) {
-                                        System.out.println(readPut);
-                                    }
-                                    bufReader1.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                                handleAllReports();
                                 break;
                             case "D":
-                                try {
-
-                                    FileReader fileread = new FileReader("transactions.csv");
-                                    BufferedReader bufferedRead2 = new BufferedReader(fileread);
-                                    while ((line = bufferedRead2.readLine()) != null) {
-                                        String[] transactionArray = line.split("\\|");
-                                        if (Double.parseDouble(transactionArray[4]) > 0) {
-                                            System.out.println(line);
-                                        }
-
+                                    for(Transactions transactions:depositList){
+                                        System.out.println(transactions);
                                     }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }       //might have to make a method for filereader would make more sense than writing it out everytime
+                                     //might have to make a method for filereader would make more sense than writing it out everytime
                                 break;
                             case "P":
-                                try {
-                                    FileReader fileReadPay = new FileReader("transactions.csv");
-                                    BufferedReader buffReaderPay = new BufferedReader(fileReadPay);
-
-                                    while ((line = buffReaderPay.readLine()) != null) {
-                                        String[] transactionArray = line.split("\\|");
-                                        if (Double.parseDouble(transactionArray[4]) < 0) {
-                                            System.out.println(line);
-                                        }
+                                    for(Transactions transactions:paymentList){
+                                        System.out.println(transactions);
                                     }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
                                 break;
 
                             case "R":
@@ -301,16 +270,34 @@ public class Capstone_1 {
             }
         }
     }
+    static void handleAllReports(){
+        try {
 
+            FileReader fileread = new FileReader("transactions.csv");
+            BufferedReader bufReader1 = new BufferedReader(fileread);
+
+            String readPut;
+
+            while ((readPut = bufReader1.readLine()) != null) {
+                System.out.println(readPut);
+            }
+            bufReader1.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     static void handlePayments() {
         try {
-            System.out.println("Im going to need your debit information");
+            System.out.println("Im going to need details surrounding your payment!");
             System.out.println("Please enter your information in the following format");
             System.out.println("2023/04/15|10:13:25|ergonomic keyboard|Amazon|-89.50");
             String paymentInfo = input.nextLine();
+            String[] transactionArray = paymentInfo.split("\\|");
+            DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/M/d");
 
+            Transactions t = new Transactions(LocalDate.parse(transactionArray[0],dateTimeFormatter), LocalTime.parse(transactionArray[1]),transactionArray[2],transactionArray[3],Double.parseDouble(transactionArray[4]));
 
-            paymentList.add(paymentInfo);
+            paymentList.add(t);
 
             writer.write("\n" + paymentInfo);
             writer.close();
@@ -326,9 +313,11 @@ public class Capstone_1 {
             System.out.println("Please enter all the info in this exact format (MM/dd/yyyy)|(Military time e.g 17:00)| description | amount");
             System.out.println("e.g 2023/04/15|11:15:00|Invoice 1001 paid|Joe|1500.00 ");
             String depositInfo = input.nextLine();
-            //split using |
+            String[] transactionArray = depositInfo.split("\\|");
+            DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/M/d");
+            Transactions t = new Transactions(LocalDate.parse(transactionArray[0],dateTimeFormatter), LocalTime.parse(transactionArray[1]),transactionArray[2],transactionArray[3],Double.parseDouble(transactionArray[4]));
 
-            depositList.add(depositInfo);
+            depositList.add(t);
 
             writer.write("\n" + (depositInfo));
             writer.close();
