@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,7 +93,7 @@ public class Capstone_1 {
                     //there should be a function that sorts all transactions and stuff
                     System.out.println("Moving to Ledger");
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(00);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -150,23 +151,16 @@ public class Capstone_1 {
                                             }
                                             break;
                                         case "2":
-                                            LocalDate previousMonth = now.minusMonths(1);
+                                            Month previousMonth = now.minusMonths(1).getMonth();
+                                            List<Transactions> previousMonthsTransaction = new ArrayList<>();
 
-                                            FileReader fileRead4 = new FileReader("transactions.csv");
-                                            BufferedReader bufferedRead5 = new BufferedReader(fileRead4);
+                                            previousMonthsTransaction.addAll(depositList);
+                                            previousMonthsTransaction.addAll(paymentList);
 
-                                            while ((line = bufferedRead5.readLine()) != null) {
-                                                String[] transactionArray = line.split("\\|");
-                                                String dateParse = transactionArray[0];
-
-                                                LocalDate transactionDate = LocalDate.parse(dateParse,DateTimeFormatter.ofPattern("yyyy/M/d"));
-                                                if (transactionDate.getMonthValue() == previousMonth.getMonthValue() &&
-                                                    transactionDate.getYear() == previousMonth.getYear()) {
-                                                    System.out.println(line);
-                                                }
-//
+                                          previousMonthsTransaction = previousMonthsTransaction.stream().filter(t -> t.getDate().getMonth() == previousMonth).collect(Collectors.toList());
+                                            for (Transactions transactions : previousMonthsTransaction) {
+                                                System.out.println(transactions);
                                             }
-                                            bufferedRead5.close();
 
                                             break;
                                         case "3":
@@ -310,6 +304,7 @@ public class Capstone_1 {
             String depositInfo = input.nextLine();
             String[] transactionArray = depositInfo.split("\\|");
             DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy/M/d");
+
             Transactions t = new Transactions(LocalDate.parse(transactionArray[0],dateTimeFormatter), LocalTime.parse(transactionArray[1]),transactionArray[2],transactionArray[3],Double.parseDouble(transactionArray[4]));
 
             depositList.add(t);
