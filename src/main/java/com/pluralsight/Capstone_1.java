@@ -53,6 +53,8 @@ public class Capstone_1 {
             }
         }
         depositList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+        paymentList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+
 
         //First I'm making my home menu and displaying options for the user to select.
         //have to restructure make home menu a static method maybe
