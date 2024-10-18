@@ -270,8 +270,7 @@ public class Capstone_1 {
         }
     }
 
-    static void handleDeposit() {
-        try {
+    static void handleDeposit() throws IOException {
             System.out.println("Im going to need your deposit information");
             System.out.println("Please enter all the info in this exact format (MM/dd/yyyy)|(Military time e.g 17:00)| description | amount");
             System.out.println("e.g 2023/04/15|11:15:00|Invoice 1001 paid|Joe|1500.00 ");
@@ -286,9 +285,6 @@ public class Capstone_1 {
             writer.write("\n" + (depositInfo));
             writer.close();
 
-        } catch (RuntimeException | IOException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 }
