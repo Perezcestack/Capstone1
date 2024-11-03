@@ -1,5 +1,6 @@
 package com.pluralsight;
 import javax.sound.sampled.Line;
+import java.beans.Customizer;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.time.*;
@@ -54,7 +55,6 @@ public class Capstone_1 {
         }
         depositList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
         paymentList.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
-
 
         //First I'm making my home menu and displaying options for the user to select.
         //have to restructure make home menu a static method maybe
@@ -130,7 +130,7 @@ public class Capstone_1 {
                                while(reports) {
                                     System.out.println("_____________________");
                                     System.out.println("Hi, Welcome to reports How would you like to divide the reports?");
-                                    System.out.println("(1)Month to Date \n(2)Previous Month \n(3)Year to Date \n(4)Previous Year \n(5)Search by Vendor \n(0)Back to home");
+                                    System.out.println("(1)Month to Date \n(2)Previous Month \n(3)Year to Date \n(4)Previous Year \n(5)Search by Vendor \n(6) Custom Search \n(0)Back to home");
                                     String reportSelect = input.nextLine();
 
                                    List<Transactions> transactionsListAll = new ArrayList<>();
@@ -183,6 +183,10 @@ public class Capstone_1 {
                                             for (Transactions transactions : transactionsListAll){
                                                 System.out.println(transactions);
                                             }
+                                            break;
+
+                                        case "6":
+                                            handleCustomSearch();
 
                                         case "0":
                                             System.out.println("Exiting Reports");
@@ -285,6 +289,41 @@ public class Capstone_1 {
             writer.write("\n" + (depositInfo));
             writer.close();
 
+
+    }
+    static void handleCustomSearch(){
+        ArrayList<String> customSearchList = new ArrayList<>();
+        System.out.println("Do you have a Start Date?(Please enter in this format!(MM/dd/yyyy))");
+        String customSearch = input.nextLine();
+
+        if (customSearch != null){
+            customSearchList.add(customSearch);
+
+            System.out.println("Do you have an End Date?(Please enter in this format!(MM/dd/yyyy))");
+            String endDate = input.nextLine();
+            if (endDate != null) {
+                customSearchList.add(endDate);
+            }
+        }else {
+            System.out.println("Do you have a description?");
+        }
+        String description = input.nextLine();
+        if (description != null){
+            customSearchList.add(description);
+        }else {
+            System.out.println("Do you have a vendor? ");
+        }
+        String vendorSearch = input.nextLine();
+
+        if (vendorSearch != null) {
+            customSearchList.add(vendorSearch);
+        }else {
+            System.out.println("Do you have an exact amount?");
+            String amountMoney = input.nextLine();
+            if (amountMoney != null){
+                customSearchList.add(amountMoney);
+            }
+        }
 
     }
 }
